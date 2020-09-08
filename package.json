@@ -8,7 +8,8 @@
   },
   "scripts": {
     "lint": "eslint \"examples/*.ts\"",
-    "start": "pm2 delete all;pm2 start pm2.config.js",
+    "up": "git stash&&git pull&&npm i&&npm start",
+    "start": "pm2 delete all;pm2 start pm2.config.js&&pm2 log",
     "start:js": "cross-env WECHATY_LOG=verbose node examples/ding-dong-bot.js",
     "start:ts": "cross-env WECHATY_LOG=verbose node -r ts-node/register examples/ding-dong-bot.ts",
     "test": "npm run lint && npm run test:version && npm run test:smoke",
