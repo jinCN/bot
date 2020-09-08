@@ -53,15 +53,23 @@ async function onMessage (msg: Message) {
       await msg.say('dong')
       sessions[msg.talker().toString()] = sessions[msg.talker().toString()] || {}
       sessions[msg.talker().toString()].time = new Date()
+      console.log(`sessions:`, sessions);
     }else{
+      await msg.wechaty.puppet.messageSendText(
+        msg.to()!.id,
+        'dong'
+      )
       sessions[msg.to()!.toString()] = sessions[msg.to()!.toString()] || {}
       sessions[msg.to()!.toString()].time = new Date()
+      console.log(`sessions:`, sessions);
     }
   } else{
     if (!meToOther) {
+
       // @ts-ignore
       if (sessions[msg.talker().toString()] && sessions[msg.talker().toString()].time - 0 > new Date().getTime() - 2 * 60 * 1000) {
         try {
+          console.log(`sessions:`, sessions);
           console.log(`sessions in`);
 
           let {data: {results: [{values: {text}}]}} = await axios.post('http://openapi.tuling123.com/openapi/api/v2', {
