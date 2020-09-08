@@ -48,6 +48,8 @@ async function onMessage (msg: Message) {
     sessions[msg.talker().toString()] = sessions[msg.talker().toString()]||{}
     sessions[msg.talker().toString()].time = new Date()
     console.log(`sessions:`, sessions);
+  }else if(msg.self()&& msg.to()&& msg.from()!.id!==msg.to()!.id){
+
   }else{
     console.log(`sessions:`, sessions);
     // @ts-ignore
