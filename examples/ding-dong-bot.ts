@@ -43,40 +43,49 @@ let sessions:{ [propName: string]: any} = {}
 async function onMessage (msg: Message) {
   log.info('StarterBot', msg.toString())
 
+  let self = msg.self()
+  let to = msg.to()
+  let toMe = !!to&&to.id===msg.wechaty.puppet.selfId()
+  let meToOther = self&&!toMe
+  console.log(`meToOther:`, meToOther);
   if (msg.text() === 'ding') {
-    await msg.say('dong')
-    sessions[msg.talker().toString()] = sessions[msg.talker().toString()]||{}
-    sessions[msg.talker().toString()].time = new Date()
-    console.log(`sessions:`, sessions);
-  }else if(msg.self()&& msg.to()&& msg.from()!.id!==msg.to()!.id){
+    if(!meToOther) {
+      await msg.say('dong')
+      sessions[msg.talker().toString()] = sessions[msg.talker().toString()] || {}
+      sessions[msg.talker().toString()].time = new Date()
+    }else{
+      sessions[msg.to()!.toString()] = sessions[msg.to()!.toString()] || {}
+      sessions[msg.to()!.toString()].time = new Date()
+    }
+  } else{
+    if (!meToOther) {
+      // @ts-ignore
+      if (sessions[msg.talker().toString()] && sessions[msg.talker().toString()].time - 0 > new Date().getTime() - 2 * 60 * 1000) {
+        try {
+          console.log(`sessions in`);
 
-  }else{
-    console.log(`sessions:`, sessions);
-    // @ts-ignore
-    if(sessions[msg.talker().toString()]&& sessions[msg.talker().toString()].time-0> new Date().getTime()-2*60*1000){
-      try {
-        console.log(`sessions in`);
-
-        let {data:{results:[{values:{text}}]}}=await axios.post('http://openapi.tuling123.com/openapi/api/v2', {
-          "reqType": 0,
-          "perception": {
-            "inputText": {
-              "text": msg.text()
+          let {data: {results: [{values: {text}}]}} = await axios.post('http://openapi.tuling123.com/openapi/api/v2', {
+            "reqType": 0,
+            "perception": {
+              "inputText": {
+                "text": msg.text()
+              },
             },
-          },
-          "userInfo": {
-            "apiKey": "1b6926a6343a45608e997e8043b5a31c",
-            "userId": "123"
-          }
-        })
-        if(text) {await msg.say(text);
-          console.log(`sessions said`);
+            "userInfo": {
+              "apiKey": "1b6926a6343a45608e997e8043b5a31c",
+              "userId": "123"
+            }
+          })
+          if (text) {
+            await msg.say(text);
+            console.log(`sessions said`);
 
+          }
+          sessions[msg.talker().toString()] = sessions[msg.talker().toString()] || {}
+          sessions[msg.talker().toString()].time = new Date()
+        } catch (e) {
+          console.error(`e:`, e);
         }
-        sessions[msg.talker().toString()] = sessions[msg.talker().toString()] || {}
-        sessions[msg.talker().toString()].time = new Date()
-      }catch (e) {
-        console.error(`e:`, e);
       }
     }
   }
