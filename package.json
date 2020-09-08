@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "eslint \"examples/*.ts\"",
-    "start": "cross-env WECHATY_LOG=verbose node -r ts-node/register examples/ding-dong-bot.ts",
+    "start": "pm2 delete all;pm2 start pm2.config.js",
     "start:js": "cross-env WECHATY_LOG=verbose node examples/ding-dong-bot.js",
     "start:ts": "cross-env WECHATY_LOG=verbose node -r ts-node/register examples/ding-dong-bot.ts",
     "test": "npm run lint && npm run test:version && npm run test:smoke",
@@ -29,6 +29,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "cross-env": "^7.0.2",
+    "pm2": "^4.4.1",
     "qrcode-terminal": "^0.12.0",
     "wechaty": "^0.48.5",
     "wechaty-plugin-contrib": "^0.14.2"
