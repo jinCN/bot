@@ -67,10 +67,10 @@ async function onMessage (msg: Message) {
     conversationId = conversation.id
   }
 
-  let say=async (msg:any)=>{
+  let say=async (text:any)=>{
     await msg.wechaty.puppet.messageSendText(
       conversationId,
-      msg
+      text
     )
   }
   if (msg.text() === 'ding') {
