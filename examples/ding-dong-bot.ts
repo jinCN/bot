@@ -12,6 +12,7 @@ import {
 
 import { generate } from 'qrcode-terminal'
 import axios from 'axios'
+// @ts-ignore
 import hash from 'hash-sum'
 
 // You can safely ignore the next line because it is using for CodeSandbox
