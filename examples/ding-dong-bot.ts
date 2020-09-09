@@ -12,6 +12,7 @@ import {
 
 import { generate } from 'qrcode-terminal'
 import axios from 'axios'
+import hash from 'hash-sum'
 
 // You can safely ignore the next line because it is using for CodeSandbox
 require('./.code-sandbox.js')
@@ -106,7 +107,7 @@ async function onMessage (msg: Message) {
             },
             "userInfo": {
               "apiKey": "1b6926a6343a45608e997e8043b5a31c",
-              userId
+              userId: hash(userId)
             }
           })
           if (text) {
