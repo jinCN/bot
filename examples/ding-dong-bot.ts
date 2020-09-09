@@ -37,6 +37,7 @@ function onLogin (user: Contact) {
 
 function onLogout (user: Contact) {
   log.info('StarterBot', '%s logout', user)
+  process.exit(1)
 }
 let sessions:{ [propName: string]: any} = {}
 
@@ -47,31 +48,55 @@ async function onMessage (msg: Message) {
   let to = msg.to()
   let toMe = !!to&&to.id===msg.wechaty.puppet.selfId()
   let meToOther = self&&!toMe
-  console.log(`meToOther:`, meToOther);
+
+  const from = msg.from()
+  // const to   = this.to()
+  const room = msg.room()
+
+  let conversationId: string
+  let conversation
+
+  if (room) {
+    conversation = room
+    conversationId = room.id
+  } else if (meToOther){
+    conversation = to!
+    conversationId = conversation.id
+  }else {
+    conversation = from!
+    conversationId = conversation.id
+  }
+
+  let say=async (msg:any)=>{
+    await msg.wechaty.puppet.messageSendText(
+      conversationId,
+      msg
+    )
+  }
   if (msg.text() === 'ding') {
-    if(!meToOther) {
-      await msg.say('dong')
-      sessions[msg.talker().toString()] = sessions[msg.talker().toString()] || {}
-      sessions[msg.talker().toString()].time = new Date()
+
+      await say('dong')
+      sessions[conversation.toString()] = sessions[conversation.toString()] || {}
+      sessions[conversation.toString()].time = new Date()
       console.log(`sessions:`, sessions);
-    }else{
-      await msg.wechaty.puppet.messageSendText(
-        msg.to()!.id,
-        'dong'
-      )
-      sessions[msg.to()!.toString()] = sessions[msg.to()!.toString()] || {}
-      sessions[msg.to()!.toString()].time = new Date()
-      console.log(`sessions:`, sessions);
-    }
+
   } else{
-    if (!meToOther) {
+    if(meToOther&&!msg.text().endsWith('。')){}else {
 
       // @ts-ignore
-      if (sessions[msg.talker().toString()] && sessions[msg.talker().toString()].time - 0 > new Date().getTime() - 2 * 60 * 1000) {
+      if (sessions[conversation.toString()] && sessions[conversation.toString()].time - 0 > new Date().getTime() - 2 * 60 * 1000) {
         try {
           console.log(`sessions:`, sessions);
           console.log(`sessions in`);
 
+          let userId
+          if (room) {
+            userId=conversation.toString()
+          }else if(meToOther){
+            userId=msg.to()!.toString()
+          }else{
+            userId=msg.from()!.toString()
+          }
           let {data: {results: [{values: {text}}]}} = await axios.post('http://openapi.tuling123.com/openapi/api/v2', {
             "reqType": 0,
             "perception": {
@@ -81,7 +106,7 @@ async function onMessage (msg: Message) {
             },
             "userInfo": {
               "apiKey": "1b6926a6343a45608e997e8043b5a31c",
-              "userId": "123"
+              userId
             }
           })
           if (text) {
@@ -89,8 +114,8 @@ async function onMessage (msg: Message) {
             console.log(`sessions said`);
 
           }
-          sessions[msg.talker().toString()] = sessions[msg.talker().toString()] || {}
-          sessions[msg.talker().toString()].time = new Date()
+          sessions[conversation.toString()] = sessions[conversation.toString()] || {}
+          sessions[conversation.toString()].time = new Date()
         } catch (e) {
           console.error(`e:`, e);
         }
