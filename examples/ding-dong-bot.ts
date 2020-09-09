@@ -112,7 +112,7 @@ async function onMessage (msg: Message) {
             }
           })
           if (text) {
-            await msg.say(text);
+            await say(text);
             console.log(`sessions said`);
 
           }
