@@ -117,7 +117,7 @@ async function onMessage (msg: Message) {
             })
             if (text) {
               await say(text);
-              console.log(`sessions said`);
+              console.log(`11sessions said`);
 
             }
             sessions[conversation.toString()] = sessions[conversation.toString()] || {}
