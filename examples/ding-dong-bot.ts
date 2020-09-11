@@ -99,25 +99,30 @@ async function onMessage (msg: Message) {
           }else{
             userId=msg.from()!.toString()
           }
-          let {data: {results: [{values: {text}}]}} = await axios.post('http://openapi.tuling123.com/openapi/api/v2', {
-            "reqType": 0,
-            "perception": {
-              "inputText": {
-                "text": msg.text()
+          if(msg.text()==='dong'){
+            await say('ding')
+            sessions[conversation.toString()] = undefined
+          }else {
+            let {data: {results: [{values: {text}}]}} = await axios.post('http://openapi.tuling123.com/openapi/api/v2', {
+              "reqType": 0,
+              "perception": {
+                "inputText": {
+                  "text": msg.text()
+                },
               },
-            },
-            "userInfo": {
-              "apiKey": "1b6926a6343a45608e997e8043b5a31c",
-              userId: hash(userId)
-            }
-          })
-          if (text) {
-            await say(text);
-            console.log(`sessions said`);
+              "userInfo": {
+                "apiKey": "1b6926a6343a45608e997e8043b5a31c",
+                userId: hash(userId)
+              }
+            })
+            if (text) {
+              await say(text);
+              console.log(`sessions said`);
 
+            }
+            sessions[conversation.toString()] = sessions[conversation.toString()] || {}
+            sessions[conversation.toString()].time = new Date()
           }
-          sessions[conversation.toString()] = sessions[conversation.toString()] || {}
-          sessions[conversation.toString()].time = new Date()
         } catch (e) {
           console.error(`e:`, e);
         }
